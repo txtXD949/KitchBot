@@ -33,3 +33,18 @@ class Config:
     def connect_db(self):
         import psycopg
         return psycopg.connect(**self.db_params)
+
+# Необходимо для единичной инициализации конфига при помощи DBOperations
+_config: Config | None = None # Хранение конфига
+
+
+def get_config() -> Config: # Создание первого конфига
+    global _config
+    if _config is None:
+        _config = Config()
+    return _config
+
+
+def set_config(cfg: Config) -> None: # Изменение конфига
+    global _config
+    _config = cfg

@@ -1,14 +1,11 @@
 import psycopg
 #from psycopg import extras
 from contextlib import contextmanager
-
-from config import Config
-
-config = Config()
+from .config import Config, get_config
 
 @contextmanager
-def get_conn(cfg: Config):
-    """Открывает соединение, коммитит при успехе, роллбэчит при ошибке, всегда закрывает."""
+def get_conn(cfg: Config | None = None):
+    cfg = cfg or get_config()
     conn = psycopg.connect(**cfg.db_params)
     try:
         yield conn
@@ -19,7 +16,8 @@ def get_conn(cfg: Config):
     finally:
         conn.close()
 
-def init_db(cfg: Config):
+def init_db(cfg: Config | None = None): # в скобках означает буквально или вставляешь конфиг, или ничего
+    cfg = cfg or get_config() 
     with get_conn(cfg) as conn:
         with conn.cursor() as cursor: # посмотреть у Дани
             cursor.execute(
@@ -34,12 +32,10 @@ def init_db(cfg: Config):
             );
             """
                            )
-            if config.mode == "test":
+            if cfg.mode == "test":
                 cursor.execute(
                     """
                     INSERT INTO users(login, hashed_password, name, email) VALUES(%s, %s, %s, %s)
                     """, ("testuser", "hashedpasswordlol", "test", "t@t.t")
                 )
     print("DB initialized")
-
-init_db(config)
