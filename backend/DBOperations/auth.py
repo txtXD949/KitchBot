@@ -39,3 +39,21 @@ def init_db(cfg: Config | None = None): # в скобках означает б�
                     """, ("testuser", "hashedpasswordlol", "test", "t@t.t")
                 )
     print("DB initialized")
+
+
+def register_user(login, hashed_password, name, email, cfg: Config | None = None):
+    cfg = cfg or get_config()
+    try:
+        with get_conn(cfg) as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                """
+                INSERT INTO users(login, hashed_password, name, email) VALUES(%s, %s, %s, %s)        
+                """,
+                (login, hashed_password, name, email)
+                )
+    except Exception as e:
+        print(f"[ERROR] register_user: {e}")
+    finally:
+        print(f"[SUCCESS] register_user: {name}")
+        
