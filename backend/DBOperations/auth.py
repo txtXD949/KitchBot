@@ -16,30 +16,6 @@ def get_conn(cfg: Config | None = None):
     finally:
         conn.close()
 
-def init_db(cfg: Config | None = None): # в скобках означает буквально или вставляешь конфиг, или ничего
-    cfg = cfg or get_config() 
-    with get_conn(cfg) as conn:
-        with conn.cursor() as cursor: # посмотреть у Дани
-            cursor.execute(
-            """
-            CREATE TABLE IF NOT EXISTS users(
-            id SERIAL PRIMARY KEY,
-            login TEXT UNIQUE,
-            hashed_password TEXT NOT NULL,
-            name TEXT,
-            email TEXT,
-            is_verified BOOLEAN DEFAULT FALSE
-            );
-            """
-                           )
-            if cfg.mode == "test":
-                cursor.execute(
-                    """
-                    INSERT INTO users(login, hashed_password, name, email) VALUES(%s, %s, %s, %s)
-                    """, ("testuser", "hashedpasswordlol", "test", "t@t.t")
-                )
-    print("DB initialized")
-
 
 def register_user(login: str, hashed_password: str, name: str, email: str, cfg: Config | None = None):
     cfg = cfg or get_config()
