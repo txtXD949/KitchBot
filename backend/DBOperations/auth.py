@@ -32,8 +32,6 @@ def register_user(login: str, hashed_password: str, name: str, email: str, cfg: 
                 )
     except Exception as e:
         print(f"[ERROR] register_user: {e}")
-    finally:
-        print(f"[SUCCESS] register_user: {name}")
 
 
 def login(login: str, hashed_password: str, cfg: Config | None = None) -> bool:
