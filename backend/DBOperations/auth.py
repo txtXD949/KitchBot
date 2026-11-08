@@ -51,8 +51,7 @@ def login(login: str, hashed_password: str, cfg: Config | None = None) -> bool:
                     return False
     except Exception as e:
         print(f"[ERROR] login: {e}")
-    finally:
-        print(f"[SUCCESS] login")
+        return False
         
 
 def compare_passwords(hashed_password_in: str, hashed_password_bd: str) -> bool:
