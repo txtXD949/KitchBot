@@ -2,6 +2,8 @@ import psycopg
 #from psycopg import extras
 from contextlib import contextmanager
 from .config import Config, get_config
+import hmac 
+
 
 @contextmanager
 def get_conn(cfg: Config | None = None):
@@ -33,6 +35,7 @@ def register_user(login: str, hashed_password: str, name: str, email: str, cfg: 
     finally:
         print(f"[SUCCESS] register_user: {name}")
 
+
 def login(login: str, hashed_password: str, cfg: Config | None = None) -> bool:
     cfg = cfg or get_config()
     try:
@@ -55,6 +58,7 @@ def login(login: str, hashed_password: str, cfg: Config | None = None) -> bool:
         
 
 def compare_passwords(hashed_password_in: str, hashed_password_bd: str) -> bool:
-    if hashed_password_bd != hashed_password_in:
-        return False
-    return True
+    return hmac.compare_digest(
+        hashed_password_in.encode("utf-8"),
+        hashed_password_bd.encode("utf-8"),
+    )
